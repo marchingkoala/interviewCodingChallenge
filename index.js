@@ -20,16 +20,71 @@
  */
 
 function checkForBingo (bingoCard, drawnNumbers) {
-  // this code for debug purposes, you can remove.
-  console.log('Drawn Numbers: ' + JSON.stringify(drawnNumbers));
+ //first I will start by creating a grid array that will contain 5 arrays
+ //grid array will be used to check rows, columns and diagonal lines to see
+ //if there's any match! 
 
-  for (let i=0, len=bingoCard.length; i<len; i++) {
-    let row = Math.floor(i/5);
-    let col = i % 5;
-   //  console.log(`${row},${col}: ${bingoCard[i]}`);
+ let grid = [];
+ for( let i=0; i<5; i++){
+  // using slice to divide bingoCard array into 5 arrays with 5 elements in each array
+  grid.push(bingoCard.slice(i * 5,(i + 1) * 5 ))
+ }
+
+ //grid array now has 5 separate arrays representing rows of bingo card
+
+ //now we will check rows, columns and diagonals of our bingo card to see
+ //if there's any match with drawnNumbers
+
+ for(let i=0; i<5; i++){
+
+  //let's check rows first by looping through grid array.
+  //each element inside the grid array represent a row of our bingo card
+  //we will use 'every' method to see if our drawnNumbers complete a row!
+
+  //for visual representation of this code, please refer to
+  //bingo_explained-02.jpg 
+  if(grid[i].every((cell) => drawnNumbers.includes(cell) || cell === 'FREE')){
+    return true;
   }
 
-  return false;
+  //then, we will check columns of grid array.
+  //for visual representation of this code, please refer to
+  //bingo_explained-03.jpg
+  if(grid.every((row)=> drawnNumbers.includes(row[i]) || row[i] === 'FREE' )){
+    return true;
+  }
+ }
+
+ //finally we will check diagonal lines.
+ //keep in mind that we have 2 diagonal lines.
+ //for this, I will make two arrays to contain elements of diagonal lines.
+ //this looks tricky at first but you can see a pattern in creating a diagonal line.
+ //As long as you use the index of the row to pick element from that row,
+ //you can easily create a diagonal line.
+ //for example, grid[0][0], grid[1][1] and so on will create the first diagonal line
+
+ //please see bingo_explained-04.jpg for visual explanation :)
+ let diagonal = [];
+ let antiDiagonal = [];
+
+ for(let i=0; i<5; i++){
+  diagonal.push(grid[i][i])
+  antiDiagonal.push(grid[i][ 4-i ])
+ }
+
+ //checking diagonal line
+ if(diagonal.every((cell) => drawnNumbers.includes(cell) || cell === 'FREE')){
+  return true;
+ }
+//checking anti (reverse) diagonal line
+ if(antiDiagonal.every((cell) => drawnNumbers.includes(cell) || cell === 'FREE')){
+  return true;
+ }
+
+ //if there's no match, return false
+
+ return false;
+
 }
 
 module.exports = checkForBingo;
@@ -63,3 +118,34 @@ checkForBingo(
     1, 33, 53, 65, 29, 75
   ]
 );
+
+//additiona test that will return true
+
+//anti diagonal test
+checkForBingo(
+  [
+    8, 29, 35, 54, 65,
+    13, 24, 44, 48, 67,
+    9, 21, 'FREE', 59, 63,
+    7, 19, 34, 53, 61,
+    1, 20, 33, 46, 72
+  ],
+  [
+    65, 48, 'FREE', 19, 1
+  ]
+);
+
+//middle column test
+checkForBingo(
+  [
+   8, 29, 35, 54, 65,
+   13, 24, 44, 48, 67,
+   9, 21, 'FREE', 59, 63,
+   7, 19, 34, 53, 61,
+   1, 20, 33, 46, 72
+  ],
+  [
+    35,44,'FREE', 34,33
+  ]
+);
+
